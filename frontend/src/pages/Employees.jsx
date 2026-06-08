@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import axios from 'axios'
 import AddEmployee from '../components/AddEmployee'
 import EmployeeList from '../components/EmployeeList'
-
+import PageNavigation from '../components/PageNavigation'
 function Employees() {
   const [employees, setEmployees] = useState([])
 
@@ -31,6 +31,16 @@ function Employees() {
         onDelete={fetchEmployees}
         onUpdate={fetchEmployees}
       />
+      <PageNavigation
+  previous={{
+    path: "/",
+    label: "Home",
+  }}
+  next={{
+    path: "/payroll",
+    label: "Payroll",
+  }}
+/>
     </div>
   )
 }

@@ -3,6 +3,7 @@ import Navbar from './components/Navbar'
 import Home from './pages/Home'
 import Employees from './pages/Employees'
 import Payroll from './pages/Payroll'
+import Reports from './pages/Reports'   // 🆕
 
 function App() {
   return (
@@ -12,6 +13,7 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/employees" element={<Employees />} />
         <Route path="/payroll" element={<Payroll />} />
+        <Route path="/reports" element={<Reports />} />   {/* 🆕 */}
       </Routes>
     </BrowserRouter>
   )

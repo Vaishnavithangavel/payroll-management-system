@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import axios from 'axios'
+import PageNavigation from '../components/PageNavigation'
 
 function Home() {
   const [totalEmployees, setTotalEmployees] = useState(0)
@@ -148,6 +149,12 @@ function Home() {
           </div>
         </div>
       </div>
+      <PageNavigation
+  next={{
+    path: "/employees",
+    label: "Employees",
+  }}
+/>
     </div>
   )
 }
