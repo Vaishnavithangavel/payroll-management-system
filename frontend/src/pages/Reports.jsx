@@ -22,8 +22,8 @@ function Reports() {
     setError(null)
     try {
       const [m, a] = await Promise.all([
-        axios.get('http://localhost:3000/api/reports/monthly'),
-        axios.get('http://localhost:3000/api/reports/annual')
+        axios.get('https://payroll-backend-pakr.onrender.com/api/reports/monthly'),
+        axios.get('https://payroll-backend-pakr.onrender.com/api/reports/annual')
       ])
       setMonthlyData(m.data)
       setAnnualData(a.data || [])
@@ -125,7 +125,7 @@ function Reports() {
         }}>
           <strong>❌ Failed to load reports:</strong> {error}
           <br />
-          <small style={{ color: '#888' }}>Make sure your backend server is running on port 3000.</small>
+          <small style={{ color: '#888' }}>Make sure the backend server is running.</small>
         </div>
       )}
 

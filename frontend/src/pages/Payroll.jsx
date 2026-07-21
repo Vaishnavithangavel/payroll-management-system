@@ -21,11 +21,11 @@ function Payroll() {
 
   const fetchEmployees = () => {
     // If Admin/HR, fetches all; if HOD, fetches department employees automatically
-    axios.get("http://localhost:3000/api/employees").then((res) => setEmployees(res.data));
+    axios.get("https://payroll-backend-pakr.onrender.com/api/employees").then((res) => setEmployees(res.data));
   };
 
   const fetchPayroll = () => {
-    axios.get("http://localhost:3000/api/payroll").then((res) => setPayrollList(res.data));
+    axios.get("https://payroll-backend-pakr.onrender.com/api/payroll").then((res) => setPayrollList(res.data));
   };
 
   const calculatePayroll = () => {
@@ -34,7 +34,7 @@ function Payroll() {
       return;
     }
     axios
-      .post("http://localhost:3000/api/payroll", {
+      .post("https://payroll-backend-pakr.onrender.com/api/payroll", {
         employee_id: selectedEmployee,
         month,
         allowance,

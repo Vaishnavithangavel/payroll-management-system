@@ -16,7 +16,7 @@ function AddEmployee({ onEmployeeAdded }) {
 
   const fetchDepartments = async () => {
     try {
-      const res = await axios.get("http://localhost:3000/api/departments");
+      const res = await axios.get("https://payroll-backend-pakr.onrender.com/api/departments");
       setDepartments(res.data);
     } catch (err) {
       console.error("Error fetching departments:", err);
@@ -29,7 +29,7 @@ function AddEmployee({ onEmployeeAdded }) {
       return;
     }
     axios
-      .post("http://localhost:3000/api/employees", {
+      .post("https://payroll-backend-pakr.onrender.com/api/employees", {
         name,
         email,
         password,

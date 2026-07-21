@@ -23,13 +23,13 @@ export default function Employees() {
   }, []);
 
   const fetchEmployees = () => {
-    axios.get("http://localhost:3000/api/employees").then((res) => {
+    axios.get("https://payroll-backend-pakr.onrender.com/api/employees").then((res) => {
       setEmployees(res.data);
     });
   };
 
   const fetchDepartments = () => {
-    axios.get("http://localhost:3000/api/departments").then((res) => {
+    axios.get("https://payroll-backend-pakr.onrender.com/api/departments").then((res) => {
       setDepartments(res.data);
       // Initialize selected HOD mapping
       const hodMap = {};
@@ -44,7 +44,7 @@ export default function Employees() {
     e.preventDefault();
     if (!newDeptName) return;
     axios
-      .post("http://localhost:3000/api/departments", { name: newDeptName })
+      .post("https://payroll-backend-pakr.onrender.com/api/departments", { name: newDeptName })
       .then(() => {
         setNewDeptName("");
         fetchDepartments();
@@ -60,7 +60,7 @@ export default function Employees() {
     const dept = departments.find((d) => d.id === deptId);
 
     axios
-      .put(`http://localhost:3000/api/departments/${deptId}`, {
+      .put(`https://payroll-backend-pakr.onrender.com/api/departments/${deptId}`, {
         name: dept.name,
         hod_id: hodId || null,
       })
@@ -77,7 +77,7 @@ export default function Employees() {
   const handleDeleteDept = (deptId) => {
     if (window.confirm("Are you sure you want to delete this department?")) {
       axios
-        .delete(`http://localhost:3000/api/departments/${deptId}`)
+        .delete(`https://payroll-backend-pakr.onrender.com/api/departments/${deptId}`)
         .then(() => {
           fetchDepartments();
           fetchEmployees();

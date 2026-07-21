@@ -16,7 +16,7 @@ export default function EmployeeDocUpload() {
 
   const fetchAllowedEmployees = async () => {
     try {
-      const res = await axios.get("http://localhost:3000/api/employees");
+      const res = await axios.get("https://payroll-backend-pakr.onrender.com/api/employees");
       setEmployees(res.data);
       if (res.data.length > 0) {
         // Auto-select the first employee (for employees, it will be themselves)

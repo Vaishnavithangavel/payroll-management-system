@@ -33,39 +33,39 @@ export default function Home() {
   const fetchDashboardData = async () => {
     try {
       // 1. Notifications (All roles)
-      const notifRes = await axios.get("http://localhost:3000/api/notifications");
+      const notifRes = await axios.get("https://payroll-backend-pakr.onrender.com/api/notifications");
       setNotifications(notifRes.data);
 
       // 2. Role specific fetches
       if (user.role === "Admin" || user.role === "HR Manager") {
-        const empRes = await axios.get("http://localhost:3000/api/employees");
+        const empRes = await axios.get("https://payroll-backend-pakr.onrender.com/api/employees");
         setTotalEmployees(empRes.data.length);
         const depts = [...new Set(empRes.data.map(e => e.department).filter(Boolean))];
         setTotalDepartments(depts.length || 6);
 
-        const payRes = await axios.get("http://localhost:3000/api/payroll");
+        const payRes = await axios.get("https://payroll-backend-pakr.onrender.com/api/payroll");
         const total = payRes.data.reduce((sum, p) => sum + parseFloat(p.net_salary), 0);
         setTotalPayroll(total);
 
         // Fetch leaves for review
-        const leavesRes = await axios.get("http://localhost:3000/api/leaves");
+        const leavesRes = await axios.get("https://payroll-backend-pakr.onrender.com/api/leaves");
         setPendingLeaves(leavesRes.data.filter(l => l.status === "Pending"));
 
       } else if (user.role === "HOD") {
-        const empRes = await axios.get("http://localhost:3000/api/employees");
+        const empRes = await axios.get("https://payroll-backend-pakr.onrender.com/api/employees");
         // HOD is automatically filtered by department in the backend route
         setTotalEmployees(empRes.data.length);
 
-        const leavesRes = await axios.get("http://localhost:3000/api/leaves");
+        const leavesRes = await axios.get("https://payroll-backend-pakr.onrender.com/api/leaves");
         setPendingLeaves(leavesRes.data.filter(l => l.status === "Pending"));
 
       } else if (user.role === "Employee") {
         // Fetch employee leaves
-        const leavesRes = await axios.get("http://localhost:3000/api/leaves");
+        const leavesRes = await axios.get("https://payroll-backend-pakr.onrender.com/api/leaves");
         setMyLeaves(leavesRes.data);
 
         // Fetch today's clock status
-        const attRes = await axios.get("http://localhost:3000/api/attendance/today");
+        const attRes = await axios.get("https://payroll-backend-pakr.onrender.com/api/attendance/today");
         if (attRes.data.checkedIn) {
           setCheckedIn(true);
           setClockInTime(attRes.data.record.clock_in);
@@ -83,7 +83,7 @@ export default function Home() {
   // Clock action (In / Out)
   const handleClockAction = async () => {
     try {
-      const res = await axios.post("http://localhost:3000/api/attendance/clock");
+      const res = await axios.post("https://payroll-backend-pakr.onrender.com/api/attendance/clock");
       if (res.data.checkedIn) {
         setCheckedIn(true);
         setClockInTime(res.data.clock_in);
@@ -106,7 +106,7 @@ export default function Home() {
       return;
     }
     try {
-      await axios.post("http://localhost:3000/api/leaves", {
+      await axios.post("https://payroll-backend-pakr.onrender.com/api/leaves", {
         leave_type: leaveType,
         start_date: startDate,
         end_date: endDate,
@@ -125,7 +125,7 @@ export default function Home() {
   // Leave approval
   const handleLeaveDecision = async (leaveId, decision) => {
     try {
-      await axios.put(`http://localhost:3000/api/leaves/${leaveId}`, { status: decision });
+      await axios.put(`https://payroll-backend-pakr.onrender.com/api/leaves/${leaveId}`, { status: decision });
       alert(`Leave request ${decision.toLowerCase()}!`);
       fetchDashboardData();
     } catch (err) {
@@ -136,7 +136,7 @@ export default function Home() {
   // Clear notifications
   const handleMarkAllRead = async () => {
     try {
-      await axios.put("http://localhost:3000/api/notifications/read-all");
+      await axios.put("https://payroll-backend-pakr.onrender.com/api/notifications/read-all");
       fetchDashboardData();
     } catch (err) {
       console.error("Failed to clear notifications:", err);

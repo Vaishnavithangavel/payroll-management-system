@@ -7,14 +7,14 @@ function PayrollList({ payrollList, onDelete }) {
 
   const deletePayroll = (id) => {
     if (window.confirm("Are you sure you want to delete this payroll record?")) {
-      axios.delete(`http://localhost:3000/api/payroll/${id}`).then(() => onDelete());
+      axios.delete(`https://payroll-backend-pakr.onrender.com/api/payroll/${id}`).then(() => onDelete());
     }
   };
 
   // Download payslip as PDF (authorized)
   const downloadPayslip = async (id, name, month) => {
     try {
-      const response = await fetch(`http://localhost:3000/api/payslip/${id}`, {
+      const response = await fetch(`https://payroll-backend-pakr.onrender.com/api/payslip/${id}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },

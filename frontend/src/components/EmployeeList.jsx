@@ -20,7 +20,7 @@ function EmployeeList({ employees, onDelete, onUpdate }) {
 
   const fetchDepartments = async () => {
     try {
-      const res = await axios.get("http://localhost:3000/api/departments");
+      const res = await axios.get("https://payroll-backend-pakr.onrender.com/api/departments");
       setDepartments(res.data);
     } catch (err) {
       console.error("Error fetching departments:", err);
@@ -29,7 +29,7 @@ function EmployeeList({ employees, onDelete, onUpdate }) {
 
   const deleteEmployee = (id) => {
     if (window.confirm("Are you sure you want to delete this employee?")) {
-      axios.delete(`http://localhost:3000/api/employees/${id}`).then(() => onDelete());
+      axios.delete(`https://payroll-backend-pakr.onrender.com/api/employees/${id}`).then(() => onDelete());
     }
   };
 
@@ -45,7 +45,7 @@ function EmployeeList({ employees, onDelete, onUpdate }) {
 
   const saveEdit = () => {
     axios
-      .put(`http://localhost:3000/api/employees/${editId}`, {
+      .put(`https://payroll-backend-pakr.onrender.com/api/employees/${editId}`, {
         name: editName,
         email: editEmail,
         password: editPassword || undefined, // only update password if typed

@@ -26,7 +26,7 @@ export default function AskEmployeeDoc() {
 
   const fetchAllowedEmployees = async () => {
     try {
-      const res = await axios.get("http://localhost:3000/api/employees");
+      const res = await axios.get("https://payroll-backend-pakr.onrender.com/api/employees");
       setEmployees(res.data);
       if (res.data.length > 0) {
         setEmpId(res.data[0].id.toString());

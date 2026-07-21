@@ -27,7 +27,7 @@ export default function Profile() {
     setError("");
     try {
       // 1. Fetch Profile info
-      const profileRes = await axios.get(`http://localhost:3000/api/employees`);
+      const profileRes = await axios.get(`https://payroll-backend-pakr.onrender.com/api/employees`);
       const matched = profileRes.data.find(emp => emp.id === parseInt(targetId));
       if (!matched) {
         throw new Error("Employee profile not found");
@@ -35,15 +35,15 @@ export default function Profile() {
       setProfileUser(matched);
 
       // 2. Fetch Attendance
-      const attRes = await axios.get(`http://localhost:3000/api/attendance`);
+      const attRes = await axios.get(`https://payroll-backend-pakr.onrender.com/api/attendance`);
       setAttendance(attRes.data.filter(a => a.employee_id === parseInt(targetId)));
 
       // 3. Fetch Leaves
-      const leaveRes = await axios.get(`http://localhost:3000/api/leaves`);
+      const leaveRes = await axios.get(`https://payroll-backend-pakr.onrender.com/api/leaves`);
       setLeaves(leaveRes.data.filter(l => l.employee_id === parseInt(targetId)));
 
       // 4. Fetch Payslips / Payroll records
-      const payRes = await axios.get(`http://localhost:3000/api/payroll`);
+      const payRes = await axios.get(`https://payroll-backend-pakr.onrender.com/api/payroll`);
       setPayslips(payRes.data.filter(p => p.employee_id === parseInt(targetId)));
 
     } catch (err) {
@@ -56,7 +56,7 @@ export default function Profile() {
 
   const handleDownloadPayslip = async (payrollId, month) => {
     try {
-      const response = await axios.get(`http://localhost:3000/api/payslip/${payrollId}`, {
+      const response = await axios.get(`https://payroll-backend-pakr.onrender.com/api/payslip/${payrollId}`, {
         responseType: "blob",
       });
       const blob = new Blob([response.data], { type: "application/pdf" });

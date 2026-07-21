@@ -62,7 +62,7 @@ export default function InterviewAI() {
     if (user.role === "Employee") return;
     setLoadingEmployees(true);
     try {
-      const res = await axios.get("http://localhost:3000/api/employees");
+      const res = await axios.get("https://payroll-backend-pakr.onrender.com/api/employees");
       setEmployees(res.data);
       if (res.data.length > 0) {
         setIntCandidateId(res.data[0].id);
@@ -76,7 +76,7 @@ export default function InterviewAI() {
   const fetchHistory = async () => {
     setLoadingHistory(true);
     try {
-      const res = await axios.get("http://localhost:3000/api/interview/history");
+      const res = await axios.get("https://payroll-backend-pakr.onrender.com/api/interview/history");
       setHistory(res.data);
     } catch (err) {
       console.error("Error fetching history:", err);
@@ -89,7 +89,7 @@ export default function InterviewAI() {
     setExpandedQA({});
     try {
       const res = await axios.get(
-        `http://localhost:3000/api/interview/all-questions?job_role=${role}&topic=${encodeURIComponent(topic.trim())}`
+        `https://payroll-backend-pakr.onrender.com/api/interview/all-questions?job_role=${role}&topic=${encodeURIComponent(topic.trim())}`
       );
       setBankQuestions(res.data);
     } catch (err) {
@@ -109,7 +109,7 @@ export default function InterviewAI() {
     setBankQuestions([]);
     try {
       const res = await axios.get(
-        `http://localhost:3000/api/interview/check-questions?job_role=${setupRole}&topic=${encodeURIComponent(setupTopic.trim())}`
+        `https://payroll-backend-pakr.onrender.com/api/interview/check-questions?job_role=${setupRole}&topic=${encodeURIComponent(setupTopic.trim())}`
       );
       setBankQuestionCount(res.data.count);
       if (res.data.count > 0) {
@@ -151,7 +151,7 @@ export default function InterviewAI() {
         const batch = batches[i];
         setGenStatusText(`Generating Batch ${batch.num}/10 (${batch.diff} difficulty)...`);
         
-        await axios.post("http://localhost:3000/api/interview/generate-batch", {
+        await axios.post("https://payroll-backend-pakr.onrender.com/api/interview/generate-batch", {
           job_role: setupRole,
           topic: setupTopic.trim(),
           difficulty: batch.diff,
@@ -163,7 +163,7 @@ export default function InterviewAI() {
       setGenStatusText("🎉 Successfully generated 100 interview questions!");
       // Recheck count
       const res = await axios.get(
-        `http://localhost:3000/api/interview/check-questions?job_role=${setupRole}&topic=${encodeURIComponent(setupTopic.trim())}`
+        `https://payroll-backend-pakr.onrender.com/api/interview/check-questions?job_role=${setupRole}&topic=${encodeURIComponent(setupTopic.trim())}`
       );
       setBankQuestionCount(res.data.count);
       if (res.data.count > 0) {
@@ -193,7 +193,7 @@ export default function InterviewAI() {
 
     try {
       const res = await axios.get(
-        `http://localhost:3000/api/interview/questions?job_role=${intRole}&topic=${encodeURIComponent(intTopic.trim())}`
+        `https://payroll-backend-pakr.onrender.com/api/interview/questions?job_role=${intRole}&topic=${encodeURIComponent(intTopic.trim())}`
       );
       setInterviewQuestions(res.data.questions);
       setInterviewStarted(true);
@@ -222,7 +222,7 @@ export default function InterviewAI() {
         candidate_answer: candidateAnswers[q.id] || ""
       }));
 
-      const res = await axios.post("http://localhost:3000/api/interview/evaluate", {
+      const res = await axios.post("https://payroll-backend-pakr.onrender.com/api/interview/evaluate", {
         employee_id: intCandidateId,
         job_role: intRole,
         topic: intTopic.trim(),
@@ -245,7 +245,7 @@ export default function InterviewAI() {
     setLoadingReportDetail(true);
     setReportDetail(null);
     try {
-      const res = await axios.get(`http://localhost:3000/api/interview/report/${reportId}`);
+      const res = await axios.get(`https://payroll-backend-pakr.onrender.com/api/interview/report/${reportId}`);
       setReportDetail(res.data);
     } catch (err) {
       alert("Failed to load report detail: " + (err.response?.data?.error || err.message));
@@ -268,7 +268,7 @@ export default function InterviewAI() {
 
   const handleDownloadPDF = () => {
     const token = localStorage.getItem("payroll_token");
-    const url = `http://localhost:3000/api/interview/download-pdf?job_role=${encodeURIComponent(setupRole)}&topic=${encodeURIComponent(setupTopic.trim())}&token=${token}`;
+    const url = `https://payroll-backend-pakr.onrender.com/api/interview/download-pdf?job_role=${encodeURIComponent(setupRole)}&topic=${encodeURIComponent(setupTopic.trim())}&token=${token}`;
     window.open(url, "_blank");
   };
 
@@ -279,7 +279,7 @@ export default function InterviewAI() {
     setLoadingAssistant(true);
     setAssistantResponse("");
     try {
-      const res = await axios.post("http://localhost:3000/api/interview/ask-knowledge", {
+      const res = await axios.post("https://payroll-backend-pakr.onrender.com/api/interview/ask-knowledge", {
         job_role: setupRole,
         topic: setupTopic.trim(),
         question: query.trim()
