@@ -237,27 +237,29 @@ async function runMigration() {
       }
     }
 
-    // 13. Seed Admin user if not exists
-    console.log("Seeding Administrator account...");
-    const [adminRows] = await connection.query(`SELECT id FROM employees WHERE email = ?`, ["admin@payroll.com"]);
-    if (adminRows.length === 0) {
-      const hashedPassword = await bcrypt.hash("adminpassword", 10);
+    // 13. Seed demo accounts
+    console.log("Seeding demo accounts...");
+    const password = await bcrypt.hash("password123", 10);
+    const demoAccounts = [
+      { name: "Admin User", email: "admin@payroll.com", role: "Admin", dept: "HR", salary: 100000 },
+      { name: "HR Manager", email: "hr@payroll.com", role: "HR Manager", dept: "HR", salary: 90000 },
+      { name: "HOD User", email: "hod@payroll.com", role: "HOD", dept: "Engineering", salary: 80000 },
+      { name: "John Employee", email: "john@payroll.com", role: "Employee", dept: "Engineering", salary: 50000 },
+    ];
+    for (const acc of demoAccounts) {
       await connection.query(`
         INSERT INTO employees (name, email, password, role, department, base_salary)
         VALUES (?, ?, ?, ?, ?, ?)
-      `, ["Admin User", "admin@payroll.com", hashedPassword, "Admin", "HR", 100000]);
-      
-      // Get that new admin employee ID and link it to the HR department
-      const [newAdminRows] = await connection.query(`SELECT id FROM employees WHERE email = ?`, ["admin@payroll.com"]);
-      if (newAdminRows.length > 0) {
-        const [hrDeptRows] = await connection.query(`SELECT id FROM departments WHERE name = 'HR'`);
-        if (hrDeptRows.length > 0) {
-          await connection.query(`UPDATE employees SET department_id = ? WHERE id = ?`, [hrDeptRows[0].id, newAdminRows[0].id]);
+        ON DUPLICATE KEY UPDATE password = VALUES(password), name = VALUES(name), role = VALUES(role), department = VALUES(department), base_salary = VALUES(base_salary)
+      `, [acc.name, acc.email, password, acc.role, acc.dept, acc.salary]);
+      const [rows] = await connection.query(`SELECT id FROM employees WHERE email = ?`, [acc.email]);
+      if (rows.length > 0) {
+        const [deptRows] = await connection.query(`SELECT id FROM departments WHERE name = ?`, [acc.dept]);
+        if (deptRows.length > 0) {
+          await connection.query(`UPDATE employees SET department_id = ? WHERE id = ?`, [deptRows[0].id, rows[0].id]);
         }
       }
-      console.log("- Admin account seeded successfully (admin@payroll.com / adminpassword)");
-    } else {
-      console.log("- Admin account already exists");
+      console.log(`  - ${acc.role}: ${acc.email} / password123`);
     }
 
     console.log("Migrations successfully completed!");
