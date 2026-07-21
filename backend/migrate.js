@@ -14,7 +14,23 @@ async function runMigration() {
   });
 
   try {
-    // 1. Create departments table
+    // 1. Create employees table (base)
+    console.log("Creating 'employees' table...");
+    await connection.query(`
+      CREATE TABLE IF NOT EXISTS employees (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        name VARCHAR(100) NOT NULL,
+        department VARCHAR(100) DEFAULT NULL,
+        base_salary DECIMAL(12,2) DEFAULT 0,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        email VARCHAR(100) UNIQUE DEFAULT NULL,
+        password VARCHAR(255) DEFAULT NULL,
+        role ENUM('Admin', 'HR Manager', 'HOD', 'Employee') DEFAULT 'Employee' NOT NULL,
+        department_id INT DEFAULT NULL
+      )
+    `);
+
+    // 2. Create departments table
     console.log("Creating 'departments' table...");
     await connection.query(`
       CREATE TABLE IF NOT EXISTS departments (
@@ -25,7 +41,15 @@ async function runMigration() {
       )
     `);
 
-    // 2. Alter employees table to add RBAC and auth columns
+    // Add foreign key for employees.department_id
+    try {
+      await connection.query(`ALTER TABLE employees ADD CONSTRAINT fk_emp_dept FOREIGN KEY (department_id) REFERENCES departments(id) ON DELETE SET NULL`);
+      console.log("- Added department_id foreign key");
+    } catch (err) {
+      if (err.code !== 'ER_DUP_KEYNAME' && err.code !== 'ER_FK_DUP_NAME') console.log("Note on emp dept FK:", err.message);
+    }
+
+    // 3. Alter employees table to add RBAC and auth columns (if not already added above)
     console.log("Altering 'employees' table for RBAC & auth...");
     
     // Check and add email
@@ -130,14 +154,77 @@ async function runMigration() {
       )
     `);
 
-    // 7. Seed standard departments
+    // 7. Create payroll_records table
+    console.log("Creating 'payroll_records' table...");
+    await connection.query(`
+      CREATE TABLE IF NOT EXISTS payroll_records (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        employee_id INT NOT NULL,
+        month VARCHAR(20) NOT NULL,
+        basic_salary DECIMAL(12,2) DEFAULT 0,
+        allowance DECIMAL(12,2) DEFAULT 0,
+        deduction DECIMAL(12,2) DEFAULT 0,
+        pt DECIMAL(10,2) DEFAULT 0,
+        ss DECIMAL(10,2) DEFAULT 0,
+        total_tax DECIMAL(10,2) DEFAULT 0,
+        net_salary DECIMAL(12,2) DEFAULT 0,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (employee_id) REFERENCES employees(id) ON DELETE CASCADE
+      )
+    `);
+
+    // 8. Create interview_questions table
+    console.log("Creating 'interview_questions' table...");
+    await connection.query(`
+      CREATE TABLE IF NOT EXISTS interview_questions (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        job_role VARCHAR(100) NOT NULL,
+        topic VARCHAR(100) NOT NULL,
+        difficulty ENUM('Easy', 'Medium', 'Hard') DEFAULT 'Medium',
+        question TEXT NOT NULL,
+        expected_answer TEXT,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
+    `);
+
+    // 9. Create interviews table
+    console.log("Creating 'interviews' table...");
+    await connection.query(`
+      CREATE TABLE IF NOT EXISTS interviews (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        employee_id INT NOT NULL,
+        job_role VARCHAR(100) NOT NULL,
+        topic VARCHAR(100) NOT NULL,
+        overall_score DECIMAL(5,2),
+        overall_feedback TEXT,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (employee_id) REFERENCES employees(id) ON DELETE CASCADE
+      )
+    `);
+
+    // 10. Create interview_answers table
+    console.log("Creating 'interview_answers' table...");
+    await connection.query(`
+      CREATE TABLE IF NOT EXISTS interview_answers (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        interview_id INT NOT NULL,
+        question_id INT NOT NULL,
+        candidate_answer TEXT,
+        ai_score DECIMAL(5,2),
+        ai_feedback TEXT,
+        FOREIGN KEY (interview_id) REFERENCES interviews(id) ON DELETE CASCADE,
+        FOREIGN KEY (question_id) REFERENCES interview_questions(id) ON DELETE CASCADE
+      )
+    `);
+
+    // 11. Seed standard departments
     console.log("Seeding departments...");
     const depts = ["HR", "Engineering", "Finance", "Marketing", "Sales", "Operations"];
     for (const d of depts) {
       await connection.query(`INSERT IGNORE INTO departments (name) VALUES (?)`, [d]);
     }
 
-    // 8. Link existing employees to departments
+    // 12. Link existing employees to departments
     console.log("Linking existing employees to departments...");
     const [employeesList] = await connection.query(`SELECT id, department FROM employees`);
     for (const emp of employeesList) {
@@ -150,7 +237,7 @@ async function runMigration() {
       }
     }
 
-    // 9. Seed Admin user if not exists
+    // 13. Seed Admin user if not exists
     console.log("Seeding Administrator account...");
     const [adminRows] = await connection.query(`SELECT id FROM employees WHERE email = ?`, ["admin@payroll.com"]);
     if (adminRows.length === 0) {
